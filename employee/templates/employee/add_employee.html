@@ -1,0 +1,71 @@
+{% extends 'employee/index.html' %}
+
+{% block title %}Add Employee{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 style="color: white;">Add Employee</h2>
+    {% if messages %}
+        <script>
+            {% for message in messages %}
+                alert("{{ message }}");
+            {% endfor %}
+        </script>
+    {% endif %}
+    <form method="post" action="{% url 'add_employee' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="firstname" style="color: white;">First Name:</label>
+            <input type="text" class="form-control" id="firstname" name="firstname" maxlength="100" required>
+        </div>
+        <div class="form-group">
+            <label for="lastname" style="color: white;">Last Name:</label>
+            <input type="text" class="form-control" id="lastname" name="lastname" maxlength="100" required>
+        </div>
+        <div class="form-group">
+            <label for="middle" style="color: white;">Middle Name:</label>
+            <input type="text" class="form-control" id="middle" name="middle" maxlength="100">
+        </div>
+        <div class="form-group">
+            <label for="gender" style="color: white;">Gender:</label>
+            <select class="form-control" id="gender" name="gender" required style="color: black;">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" id="addEmployeeBtn">Add Employee</button>
+    </form>
+</div>
+
+<!-- Include SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        addEmployeeBtn.addEventListener('click', function () {
+            const firstname = document.getElementById('firstname').value;
+            const lastname = document.getElementById('lastname').value;
+            const gender = document.getElementById('gender').value;
+
+            if (!firstname || !lastname || !gender) {
+                // Show error message if any of the required fields is empty
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please fill out all required fields.',
+                    confirmButtonColor: '#dc3545'
+                });
+            } else {
+                // If all required fields are filled, show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Employee added successfully!',
+                    showConfirmButton: true,
+                    timer: 2000
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
