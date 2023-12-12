@@ -6,12 +6,14 @@
     <title>{% block title %}Employee Information Management{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Include Font Awesome library -->
+    {% load static %}
     {% block additional_styles %}{% endblock %}
     <style>
         body {
             background-color: #f3a0a9; /* Lightened background color */
             background-size: cover;
             background-blur: 10px;
+            margin-bottom: 60px; /* Add margin for the fixed footer */
         }
 
         .navbar {
@@ -19,15 +21,15 @@
         }
 
         .navbar-dark .navbar-toggler-icon {
-            background-color: #ffffff; /* Navbar toggler color */
+            background-color: rgba(0,0,0,0.0); /* Navbar toggler color */
         }
 
         .navbar-dark .navbar-toggler-icon:focus, .navbar-dark .navbar-toggler-icon:hover {
-            background-color: #ffffff; /* Navbar toggler color on hover */
+            background-color:rgba(0,0,0,0.0); /* Navbar toggler color on hover */
         }
 
         .navbar-dark .navbar-toggler {
-            border-color: #ffffff; /* Navbar toggler border color */
+            border-color: #f3a0a9; /* Navbar toggler border color */
         }
 
         .navbar-dark .navbar-nav .nav-link {
@@ -37,16 +39,45 @@
         .navbar-dark .navbar-nav .nav-link:hover {
             color: #ffffff; /* Navbar link color on hover */
         }
+
+        .navbar-brand img {
+            display: none; /* Hide the logo image */
+        }
+
+        .navbar-brand .logo-icon {
+            font-size: 24px; /* Adjust the size of the icon */
+            margin-right: 5px; /* Optional: Add margin for spacing */
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to right, #007bff, hsl(211,100%,50%), rgb(0,123,255));
+            text-align: center;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer p {
+            margin: 0;
+            color: #ffffff; /* Footer text color */
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="{% url 'home' %}">{% block brand_name %}Employee Information Management{% endblock %}</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <a class="navbar-brand" href="{% url 'home' %}">
+        <span class="logo-icon"><i class="fas fa-building"></i></span>
+        {% block brand_name %}Employee Information Management{% endblock %}
+    </a>
+   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+</button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
@@ -63,6 +94,10 @@
 </nav>
 
 {% block content %}{% endblock %}
+
+<footer class="footer">
+    <p>&copy; 2023 Employee Information Management. All rights reserved.</p>
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

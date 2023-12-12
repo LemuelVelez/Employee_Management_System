@@ -3,38 +3,55 @@
 {% block title %}Add Employee{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 style="color: white;">Add Employee</h2>
-    {% if messages %}
-        <script>
-            {% for message in messages %}
-                alert("{{ message }}");
-            {% endfor %}
-        </script>
-    {% endif %}
-    <form method="post" action="{% url 'add_employee' %}">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="firstname" style="color: white;">First Name:</label>
-            <input type="text" class="form-control" id="firstname" name="firstname" maxlength="100" required>
-        </div>
-        <div class="form-group">
-            <label for="lastname" style="color: white;">Last Name:</label>
-            <input type="text" class="form-control" id="lastname" name="lastname" maxlength="100" required>
-        </div>
-        <div class="form-group">
-            <label for="middle" style="color: white;">Middle Name:</label>
-            <input type="text" class="form-control" id="middle" name="middle" maxlength="100">
-        </div>
-        <div class="form-group">
-            <label for="gender" style="color: white;">Gender:</label>
-            <select class="form-control" id="gender" name="gender" required style="color: black;">
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary" id="addEmployeeBtn">Add Employee</button>
-    </form>
+<div class="d-flex justify-content-center mt-5"> <!-- Centering container -->
+    <div>
+        <h2 style="color: white;"><i class="fas fa-user-plus"></i> Add Employee</h2> <!-- Adding user-plus icon -->
+
+        <form method="post" action="{% url 'add_employee' %}" class="d-flex flex-column align-items-start">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="firstname" style="color: white;">First Name:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="firstname" name="firstname" maxlength="100" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" style="color: white;">Last Name:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="lastname" name="lastname" maxlength="100" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="middle" style="color: white;">Middle Name:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="middle" name="middle" maxlength="100">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="gender" style="color: white;">Gender:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                    </div>
+                    <select class="form-control" id="gender" name="gender" required style="color: black;">
+                        {% for value, label in form.fields.gender.choices %}
+                            <option value="{{ value }}" {% if value == '' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addEmployeeBtn"><i class="fas fa-check"></i> Add Employee</button> <!-- Adding check icon -->
+        </form>
+    </div>
 </div>
 
 <!-- Include SweetAlert2 library -->
@@ -43,7 +60,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const addEmployeeBtn = document.getElementById('addEmployeeBtn');
-        addEmployeeBtn.addEventListener('click', function () {
+        addEmployeeBtn.addEventListener('click', function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
             const firstname = document.getElementById('firstname').value;
             const lastname = document.getElementById('lastname').value;
             const gender = document.getElementById('gender').value;
@@ -62,7 +82,13 @@
                     icon: 'success',
                     title: 'Employee added successfully!',
                     showConfirmButton: true,
-                    timer: 2000
+                    confirmButtonText: 'Okay',  // Add a confirm button
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the list page
+                        window.location.href = "{% url 'list_employees' %}";
+                    }
                 });
             }
         });

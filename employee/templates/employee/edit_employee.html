@@ -1,0 +1,83 @@
+{% extends 'employee/index.html' %}
+
+{% block title %}Edit Employee{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100"> <!-- Centering container vertically and horizontally -->
+    <div class="bg-light p-5 rounded"> <!-- Adding background color and padding -->
+        <h2 class="text-dark mb-4"><i class="fas fa-user-edit"></i> Edit Employee</h2> <!-- Adding margin-bottom and user-edit icon -->
+        <form method="post" action="{% url 'edit_employee' employee.id %}" class="d-flex flex-column">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-save"></i> Update Employee</button> <!-- Adding margin-top and save icon -->
+        </form>
+    </div>
+</div>
+
+<!-- Include SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const updateEmployeeBtn = document.querySelector('.btn-primary');
+        updateEmployeeBtn.addEventListener('click', function () {
+            // You may need to adjust the selector based on your actual form structure
+            const form = document.querySelector('form');
+
+            // Define the event listener function
+            function submitForm(event) {
+                // Prevent the default form submission
+                event.preventDefault();
+
+                // Perform an AJAX form submission
+                fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Show success message using SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Employee updated successfully!',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Okay',  // Add a confirm button
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                // Redirect to the list page
+                                window.location.href = "{% url 'list_employees' %}";
+                            }
+                        });
+                    } else {
+                        // Show error message using SweetAlert2
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while updating the employee.',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during fetch operation:', error);
+                    // Handle the error here (e.g., show an error message to the user)
+                });
+            }
+
+            // Attach the event listener to the form
+            form.addEventListener('submit', submitForm);
+        });
+    });
+</script>
+{% endblock %}

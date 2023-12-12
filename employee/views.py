@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EmployeeForm
 from .models import Employee
 from django.contrib import messages
+from django.http import JsonResponse
 
 def home(request):
     return render(request, 'employee/index.html')
@@ -10,28 +11,42 @@ def list_employees(request):
     employees = Employee.objects.all()
     return render(request, 'employee/list_employees.html', {'employees': employees})
 
-def add(request):
-    if request.method == 'POST':
-        form = EmployeeForm(request.POST)
-        if form.is_valid():
-            new_firstname = form.cleaned_data['firstname']
-            new_middle = form.cleaned_data['middle']
-            new_lastname = form.cleaned_data['lastname']
-            new_gender = form.cleaned_data['gender']
+def add(request, employee_id=None):
+    if employee_id:
+        # If employee_id is provided, it's an edit request
+        employee = get_object_or_404(Employee, pk=employee_id)
+    else:
+        employee = None
 
-            new_employee = Employee(
-                firstname=new_firstname,
-                lastname=new_lastname,
-                middle=new_middle,
-                gender=new_gender
-            )
-            new_employee.save()
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
 
             # Show success message
             messages.success(request, 'Employee added successfully')
-            return render(request, 'employee/add_employee.html', {'form': form})
 
     else:
-        form = EmployeeForm()
-        form.field_order = None
-        return render(request, 'employee/add_employee.html', {'form': form})
+        form = EmployeeForm(instance=employee)
+
+    return render(request, 'employee/add_employee.html', {'form': form, 'employee': employee})
+
+def delete_employee(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    employee.delete()
+    messages.success(request, 'Employee deleted successfully')
+    return redirect('list_employees')
+
+# Updated view for editing employees
+def edit_employee(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+
+    if request.method == 'POST':
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+    else:
+        form = EmployeeForm(instance=employee)
+
+    return render(request, 'employee/edit_employee.html', {'form': form, 'employee': employee})
